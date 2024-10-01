@@ -1,12 +1,24 @@
 #!/bin/bash
 
-# Path to the environment variables file
-env_file="envVars.txt"
+# Check if a file argument is provided
+if [ "$#" -eq 1 ]; then
+  env_file="$1"
+else
+  echo "Please provide the path to the environment variables file:"
+  read -r env_file
+fi
 
-# Check if environment variable file exists
+# Check if the provided file exists
 if [ ! -f "$env_file" ]; then
-  echo "***** CONNECTION FAILED: Environment variables file '$env_file' not found *****"
+  echo "***** CONNECTION FAILED: The provided file '$env_file' was not found *****"
   exit 1
+fi
+
+# Check if the env_file contains 'export' strings and call convertToEnvVars.sh if needed
+if grep -q '^export' "$env_file"; then
+  #echo "File contains 'export' statements, converting the file format..."
+  ./scripts/convertToEnvVars.sh "$env_file"
+  env_file="envVars.txt"  # Set the new file as the source for environment variables
 fi
 
 # Load environment variables from the file

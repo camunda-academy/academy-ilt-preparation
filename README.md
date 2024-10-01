@@ -1,43 +1,34 @@
 # Tool for Testing Camunda 8 SaaS Connections
 
-https://jira.camunda.com/browse/ACADEMY-3286
+Camunda internal project: https://jira.camunda.com/browse/ACADEMY-3286
 
 ## Purpose
 
 You need to ensure that you can connect to Camunda 8 SaaS as a prerequisite for a Camunda 8 training for developers.
 This tool provides a script that will verify the connection.
 
-## Script Files
+## Prerequisites
 
-There are two scripts, depending on your machine:
+- Running Camunda 8 cluster (either provided by Camunda training team or created by you).
+- Api client created
 
-- Unix-like systems: `scripts/testConnection.sh`
-- Windows systems: `scripts/testConnection.ps1`
+If you already have a file "CamundaCloudMgmtAPI-Client-\*.txt" then you are all set and you can proceed.
+Otherwise you need to:
 
-## Dependencies
+1. [Create a Camunda 8 trial account](https://academy.camunda.com/c8-h2-create-account)
+2. [Create a Camunda 8 cluster](https://academy.camunda.com/c8-h2-create-cluster)
+3. [Obtain client credentials: "CamundaCloudMgmtAPI-Client-\*.txt"](https://academy.camunda.com/c8-h2-create-client-credentials)
 
-These scripts are designed for ease of use without requiring additional software installation.
-They use built-in functions that are standard in Unix and Windows systems.
-
-The scripts require a file called `envVars.txt` containing environment variables necessary for the connection to Camunda 8 SaaS.
-Ensure that this file is placed in the same directory as the script.
+Click on the above links to access **How To** guides on Camunda Academy.
 
 ## How to Use
 
-1. Paste the `envVars.txt`(\*) file into the same directory as the script.
-2. Run the script:
-   - **Windows**: Open PowerShell and run `./testConnection.ps1`
-   - **Mac/Unix**: Open the terminal and run `./testConnection.sh`
-3. Review the result for success or failure.
-
-**(\*) Note**: You can create the `envVars.txt` if you have access to `camunda.io`:
-
-- Sign up at [Camunda.io](https://camunda.io) and [create an API client](https://docs.camunda.io/docs/components/console/manage-clusters/manage-api-clients/#create-a-client).
-- Download the Client Credentials in environment variables (`export VAR_NAME='value'`).
-
-  ![Instructions API](instructionsApi.gif)
-
-- Convert this file to the required format (`VAR_NAME=value`). You can optionally use the provided `script/convertToEnvVar.(sh/ps1)`.
+1. Clone / download the project
+2. Copy the client credential file in the project.
+3. Run the script:
+   - **Windows**: Open PowerShell and run `./testConnection.ps1 CamundaCloudMgmtAPI-Client-UPDATETHEFILENAME.txt `
+   - **Mac/Unix**: Open the terminal and run `./testConnection.sh CamundaCloudMgmtAPI-Client-UPDATETHEFILENAME.txt`
+4. Review the result for success or failure.
 
 ## Connection Result
 
@@ -54,6 +45,11 @@ The script will test your connection to Camunda 8 SaaS and provide one of the fo
   - Network or endpoint connectivity problems.
 
   In case of failure, please contact your training manager with the error details.
+
+## Script Dependencies
+
+These scripts are designed for ease of use without requiring additional software installation.
+They use built-in functions that are standard in Unix and Windows systems.
 
 ## Tested Environments
 

@@ -24,4 +24,4 @@ output_file="envVars.txt"
     done < "$input_file"
 } > "$output_file"
 
-echo "Converted file saved as: $output_file"
+#echo "Converted file saved as: $output_file"

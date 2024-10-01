@@ -1,5 +1,11 @@
-# Define the path to the environment variables file
-$envVarsFilePath = "envVars.txt"
+param (
+    [string]$envVarsFilePath
+)
+
+# If the file path is not provided, prompt the user for it
+if (-not $envVarsFilePath) {
+    $envVarsFilePath = Read-Host "Please provide the path to the environment variables file"
+}
 
 # Check if the environment variables file exists
 if (-Not (Test-Path -Path $envVarsFilePath)) {
@@ -7,7 +13,17 @@ if (-Not (Test-Path -Path $envVarsFilePath)) {
     exit 1
 }
 
-# Load environment variables from the file
+# Check if the file contains 'export' statements
+$containsExport = Select-String -Path $envVarsFilePath -Pattern "^export" -Quiet
+
+# If 'export' is found, convert the file using convertToEnvVars.ps1
+if ($containsExport) {
+    Write-Host "File contains 'export' statements, converting the file format..."
+    & "./scripts/convertToEnvVars.ps1" $envVarsFilePath
+    $envVarsFilePath = "envVars.txt"  # Set the new file as the source for environment variables
+}
+
+# Load environment variables from the file (either original or converted)
 try {
     $envVars = Get-Content -Path $envVarsFilePath | ForEach-Object {
         $pair = $_ -split "="

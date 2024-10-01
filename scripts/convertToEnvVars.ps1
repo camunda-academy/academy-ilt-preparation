@@ -31,5 +31,3 @@ $windowsFormat = foreach ($line in $content) {
 
 # Write the converted content to the output file
 $windowsFormat | Set-Content -Path $outputFilePath
-
-Write-Host "Converted file saved as: $outputFilePath"
