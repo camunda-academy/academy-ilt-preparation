@@ -1,3 +1,2 @@
-envVars*
 .DS_Store
-pem
+private/
