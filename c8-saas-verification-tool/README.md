@@ -18,6 +18,7 @@ Otherwise you need to:
 1. [Create a Camunda 8 trial account](https://academy.camunda.com/c8-h2-create-account)
 2. [Create a Camunda 8 cluster](https://academy.camunda.com/c8-h2-create-cluster)
 3. [Obtain client credentials: "CamundaCloudMgmtAPI-Client-\*.txt"](https://academy.camunda.com/c8-h2-create-client-credentials)
+
    Client credentials should be obtained in the "Environment variables" format.
 
 Click on the above links to access **How To** guides on Camunda Academy.
