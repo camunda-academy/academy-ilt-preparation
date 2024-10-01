@@ -70,3 +70,5 @@ Known issues:
   ```bash
   powershell -ExecutionPolicy Bypass -File testConnection.ps1 CamundaCloudMgmtAPI-Client.txt
   ```
+
+If you have a new issue, please just create it in the github repository
