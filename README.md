@@ -24,10 +24,10 @@ Click on the above links to access **How To** guides on Camunda Academy.
 ## How to Use
 
 1. Clone / download the project
-2. Copy the client credential file in the project.
+2. Copy the client credential file in the project. (i.e. `CamundaCloudMgmtAPI.txt`)
 3. Run the script:
-   - **Windows**: Open PowerShell and run `./testConnection.ps1 CamundaCloudMgmtAPI-Client-UPDATETHEFILENAME.txt `
-   - **Mac/Unix**: Open the terminal and run `./testConnection.sh CamundaCloudMgmtAPI-Client-UPDATETHEFILENAME.txt`
+   - **Windows**: Open PowerShell at the project root directory and run `./testConnection.ps1 CamundaCloudMgmtAPI.txt `
+   - **Mac/Unix**: Open the terminal at the project root directory and run `./testConnection.sh CamundaCloudMgmtAPI.txt`
 4. Review the result for success or failure.
 
 ## Connection Result
