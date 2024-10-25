@@ -9,40 +9,28 @@ This tool provides a script that will verify the connection.
 
 ## Prerequisites
 
-- Running Camunda 8 cluster v8.5 or superior (either provided by Camunda training team or created by you).
-- Api client created
-
-If you already have a file "CamundaCloudMgmtAPI-Client-\*.txt" then you are all set and you can proceed.
-Otherwise you need to:
-
-1. [Create a Camunda 8 trial account](https://academy.camunda.com/c8-h2-create-account)
-2. [Create a Camunda 8 cluster](https://academy.camunda.com/c8-h2-create-cluster)
-3. [Obtain client credentials: "CamundaCloudMgmtAPI-Client-\*.txt"](https://academy.camunda.com/c8-h2-create-client-credentials)
-
-   Client credentials should be obtained in the "Environment variables" format.
-
-Click on the above links to access **How To** guides on Camunda Academy.
+Any Windows, Linux, Mac computers.
 
 ## How to Use
 
 1. Clone / download the project
-2. Copy the client credential file in the project. (i.e. `CamundaCloudMgmtAPI.txt`)
-3. Run the script:
-   - **Windows**: Open PowerShell at the project root directory and run `./testConnection.ps1 CamundaCloudMgmtAPI.txt `
-   - **Mac/Unix**: Open the terminal at the project root directory and run `./testConnection.sh CamundaCloudMgmtAPI.txt`
-4. Review the result for success or failure.
+2. Ask for a token.txt file to a Camunda Trainer
+3. Copy the file in the root directory of the project
+4. Run the script:
+   - **Windows**: Open PowerShell at the project root directory and run `./testConnection.ps1`
+   - **Mac/Unix**: Open the terminal at the project root directory and run `./testConnection.sh`
+5. Review the result for success or failure.
 
 ## Connection Result
 
 The script will test your connection to Camunda 8 SaaS and provide one of the following outcomes:
 
-- **Success**: If a valid response is received from Camunda 8 SaaS and 3 brokers (with nodeId 0, 1, and 2) are detected, the script will print `***** OK *****` along with connection details.
+- **Success**: If a valid response is received from Camunda 8 SaaS and 3 brokers (with nodeId 0, 1, and 2) are detected, the script will print `***** CONNECTION SUCCESSFUL *****` along with connection details.
   This confirms a successful connection.
   You'll be able to do the training exercises.
 - **Failure**: If the connection cannot be established, or fewer than 3 brokers are detected, the script will print `***** CONNECTION FAILED *****`.
   Potential causes of failure include:
 
-  - Missing or incorrect environment variables.
   - Invalid access token or authorization issues.
   - Network or endpoint connectivity problems.
 
@@ -69,7 +57,7 @@ Known issues:
 
 - **For Windows systems**, if you encounter the error: _"Execution of scripts is disabled on this system"_, open a command-line terminal (cmd.exe) and run:
   ```bash
-  powershell -ExecutionPolicy Bypass -File testConnection.ps1 CamundaCloudMgmtAPI-Client.txt
+  powershell -ExecutionPolicy Bypass -File testConnection.ps1
   ```
 
 If you have a new issue, please just create it in the github repository

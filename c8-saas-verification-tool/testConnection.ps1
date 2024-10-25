@@ -1,75 +1,40 @@
-param (
-    [string]$envVarsFilePath
-)
+# Define the file path
+$TOKEN_FILE = ".\token.txt"
 
-# If the file path is not provided, prompt the user for it
-if (-not $envVarsFilePath) {
-    $envVarsFilePath = Read-Host "Please provide the path to the environment variables file"
-}
-
-# Check if the environment variables file exists
-if (-Not (Test-Path -Path $envVarsFilePath)) {
-    Write-Host "***** CONNECTION FAILED: Environment variables file '$envVarsFilePath' not found *****"
+# Function to print error message and exit
+function Print-Error {
+    Write-Host "***** CONNECTION FAILED: $args *****"
     exit 1
 }
 
-# Check if the file contains 'export' statements
-$containsExport = Select-String -Path $envVarsFilePath -Pattern "^export" -Quiet
-
-# If 'export' is found, convert the file using convertToEnvVars.ps1
-if ($containsExport) {
-    Write-Host "File contains 'export' statements, converting the file format..."
-    & "./scripts/convertToEnvVars.ps1" $envVarsFilePath
-    $envVarsFilePath = "envVars.txt"  # Set the new file as the source for environment variables
+# Check if the token file exists
+if (-not (Test-Path $TOKEN_FILE)) {
+    # Prompt the user for the path to the token file if the default file doesn't exist
+    $TOKEN_FILE = Read-Host "Please provide the path to the file with the token"
 }
 
-# Load environment variables from the file (either original or converted)
+# Check again if the provided token file exists
+if (-not (Test-Path $TOKEN_FILE)) {
+    Print-Error "Token file not found."
+}
+
+# Read the token from the file
+$TOKEN = Get-Content $TOKEN_FILE
+
+# Execute the Invoke-RestMethod command with the token and store the response
 try {
-    $envVars = Get-Content -Path $envVarsFilePath | ForEach-Object {
-        $pair = $_ -split "="
-        [System.Environment]::SetEnvironmentVariable($pair[0], $pair[1])
+    $headers = @{
+        "Authorization" = "Bearer $TOKEN"
     }
+    $response = Invoke-RestMethod -Uri "https://api.cloud.camunda.io/members" -Method Get -Headers $headers
+    $response | ConvertTo-Json
+    Write-Host "***** CONNECTION SUCCESSFUL *****"
 } catch {
-    Write-Host "Error loading environment variables: $_"
-    exit 1
-}
-
-# Get the access token
-try {
-    $body = @{
-        client_id     = $env:ZEEBE_CLIENT_ID
-        client_secret = $env:ZEEBE_CLIENT_SECRET
-        audience      = $env:ZEEBE_TOKEN_AUDIENCE
-        grant_type    = "client_credentials"
-    }
-
-    $response = Invoke-RestMethod -Uri $env:ZEEBE_AUTHORIZATION_SERVER_URL -Method Post -ContentType "application/json" -Body ($body | ConvertTo-Json)
-    $accessToken = $response.access_token
-} catch {
-    Write-Host "Error obtaining access token: $_"
-    exit 1
-}
-
-# Get the topology information
-try {
-    $topologyResponse = Invoke-RestMethod -Uri "$env:ZEEBE_REST_ADDRESS/v1/topology" -Method Get -Headers @{ Authorization = "Bearer $accessToken" }
-} catch {
-    Write-Host "Error obtaining topology information: $_"
-    exit 1
-}
-
-# Count the number of brokers
-try {
-    $brokerCount = $topologyResponse.brokers.Count
-    Write-Host "Broker count: $brokerCount"
-
-    if ($brokerCount -ge 1) {
-        $topologyResponse | ConvertTo-Json | Write-Host
-        Write-Host "***** OK ******"
+    if ($_.Exception.Response) {
+        $statusCode = $_.Exception.Response.StatusCode.value__
+        $statusDescription = $_.Exception.Response.StatusDescription
+        Print-Error "Status code: $statusCode Response body: $statusDescription"
     } else {
-        Write-Host "***** CONNECTION FAILED: No brokers found *****"
+        Print-Error "Error obtaining members information or server returned error status"
     }
-} catch {
-    Write-Host "Error counting brokers or processing topology response: $_"
-    Write-Host "***** CONNECTION FAILED: Unable to process topology response *****"
 }
