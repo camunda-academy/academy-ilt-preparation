@@ -14,7 +14,7 @@ Any Windows, Linux, Mac computers.
 ## How to Use
 
 1. Clone / download the project
-2. Ask for a envVars.txt file to a Camunda Trainer/Manager
+2. Ask for an envVars.txt (\*) file to a Camunda Trainer/Manager
 3. Copy the file in the root directory of the project
 4. Run the script:
    - **Windows**: Open PowerShell at the project root directory and run `./testConnection.ps1`
@@ -61,3 +61,10 @@ Known issues:
   ```
 
 If you have a new issue, please just create it in the github repository
+
+(\*) envVars file contains the Administration client credentials in this format:
+export CAMUNDA_CONSOLE_CLIENT_ID='example'
+export CAMUNDA_CONSOLE_CLIENT_SECRET='example'
+export CAMUNDA_OAUTH_URL='https://login.cloud.camunda.io/oauth/token'
+export CAMUNDA_CONSOLE_BASE_URL='https://api.cloud.camunda.io'
+export CAMUNDA_CONSOLE_OAUTH_AUDIENCE='api.cloud.camunda.io'
