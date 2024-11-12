@@ -1,7 +1,12 @@
 #!/bin/sh
 
-# Define the file path
-TOKEN_FILE="./token.txt"
+# Load the environment variables from the envVars.txt file
+if [ -f "envVars.txt" ]; then
+    . ./envVars.txt
+else
+    echo "envVars.txt file not found. Double check that this file is available in this directory (ls)"
+    exit 1
+fi
 
 # Function to print error message
 print_error() {
@@ -9,26 +14,25 @@ print_error() {
     exit 1
 }
 
-# Check if the token file exists
-if [ ! -f "$TOKEN_FILE" ]; then
-    # Prompt the user for the path to the token file if the default file doesn't exist
-    read -p "Please provide the path to the file with the token: " TOKEN_FILE
-fi
+# Generate the token
+TOKEN_RESPONSE=$(curl --silent --header "Content-Type: application/json" --request POST \
+    --data "{\"grant_type\":\"client_credentials\", \"audience\":\"$CAMUNDA_CONSOLE_OAUTH_AUDIENCE\", \"client_id\":\"$CAMUNDA_CONSOLE_CLIENT_ID\", \"client_secret\":\"$CAMUNDA_CONSOLE_CLIENT_SECRET\"}" \
+    $CAMUNDA_OAUTH_URL)
 
-# Check again if the provided token file exists
-if [ ! -f "$TOKEN_FILE" ]; then
-    print_error "Token file not found."
+# Extract the token from the response
+TOKEN=$(echo $TOKEN_RESPONSE | sed -e 's/.*"access_token":"\([^"]*\)".*/\1/')
+
+# Check if we got a token
+if [ -z "$TOKEN" ]; then
+    print_error "Failed to retrieve access token."
     exit 1
 fi
-
-# Read the token from the file
-TOKEN=$(<"$TOKEN_FILE")
 
 # Execute the curl command with the token and store the response
 # Perform the curl command and capture the HTTP status code and response body
 HTTP_RESPONSE=$(curl --silent --header "Authorization: Bearer $TOKEN" \
                 --write-out "HTTPSTATUS:%{http_code}" \
-                https://api.cloud.camunda.io/members)
+                $CAMUNDA_CONSOLE_BASE_URL/members)
 
 # Extract the body and the status
 BODY=$(echo "$HTTP_RESPONSE" | sed -e 's/HTTPSTATUS\:.*//g')
@@ -36,9 +40,14 @@ STATUS=$(echo "$HTTP_RESPONSE" | grep -o 'HTTPSTATUS:.*' | sed -e 's/HTTPSTATUS\
 
 # Check the status code
 if [ "$STATUS" -eq 200 ]; then
-    # Print the response to the screen if the status code is 200 OK
-    echo "$BODY"
-    echo "***** CONNECTION SUCCESSFUL *****"
+    # Use grep to check if the response contains "name" and "email"
+    if echo "$BODY" | grep -q '"name"' && echo "$BODY" | grep -q '"email"'; then
+        # If the strings "name" and "email" are found, consider it successful
+        echo "***** CONNECTION SUCCESSFUL *****"
+    else
+        # If the strings are not found, print an error message
+        print_error "Response does not contain required attributes."
+    fi
 else
     # If the status code is not 200, print the error message
     print_error "Status code: $STATUS Response body: $BODY"

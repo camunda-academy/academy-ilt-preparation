@@ -1,40 +1,67 @@
-# Define the file path
-$TOKEN_FILE = ".\token.txt"
-
-# Function to print error message and exit
-function Print-Error {
-    Write-Host "***** CONNECTION FAILED: $args *****"
-    exit 1
+# Check if the envVars.txt file exists
+if (-Not (Test-Path "envVars.txt")) {
+    Write-Host "envVars.txt file not found. Double check that this file is available in this directory."
+    exit
 }
 
-# Check if the token file exists
-if (-not (Test-Path $TOKEN_FILE)) {
-    # Prompt the user for the path to the token file if the default file doesn't exist
-    $TOKEN_FILE = Read-Host "Please provide the path to the file with the token"
+# Load the environment variables from the envVars.txt file
+Get-Content "envVars.txt" | ForEach-Object {
+    if ($_ -match "export\s+(\w+)='(.+)'") {
+        Set-Item -Path "env:$($matches[1])" -Value $matches[2]
+    }
 }
 
-# Check again if the provided token file exists
-if (-not (Test-Path $TOKEN_FILE)) {
-    Print-Error "Token file not found."
+# Function to print error message
+Function Print-Error {
+    Write-Host "***** CONNECTION FAILED: $($args[0]) *****"
+    exit
 }
 
-# Read the token from the file
-$TOKEN = Get-Content $TOKEN_FILE
+# Generate the token
+$tokenRequestBody = @{
+    grant_type = "client_credentials"
+    audience = $env:CAMUNDA_CONSOLE_OAUTH_AUDIENCE
+    client_id = $env:CAMUNDA_CONSOLE_CLIENT_ID
+    client_secret = $env:CAMUNDA_CONSOLE_CLIENT_SECRET
+} | ConvertTo-Json
 
-# Execute the Invoke-RestMethod command with the token and store the response
 try {
-    $headers = @{
-        "Authorization" = "Bearer $TOKEN"
-    }
-    $response = Invoke-RestMethod -Uri "https://api.cloud.camunda.io/members" -Method Get -Headers $headers
-    $response | ConvertTo-Json
-    Write-Host "***** CONNECTION SUCCESSFUL *****"
+    $tokenResponse = Invoke-RestMethod -Uri $env:CAMUNDA_OAUTH_URL -Method Post -ContentType "application/json" -Body $tokenRequestBody -ErrorAction Stop
+    $accessToken = $tokenResponse.access_token
 } catch {
-    if ($_.Exception.Response) {
-        $statusCode = $_.Exception.Response.StatusCode.value__
-        $statusDescription = $_.Exception.Response.StatusDescription
-        Print-Error "Status code: $statusCode Response body: $statusDescription"
+    Print-Error "Failed to retrieve access token. $_"
+}
+
+# Check if we got a token
+if (-not $accessToken) {
+    Print-Error "Access token is null or empty."
+}
+
+# Use the token to make the next request
+$headers = @{
+    Authorization = "Bearer $accessToken"
+}
+
+try {
+    $membersResponse = Invoke-WebRequest -Uri "$env:CAMUNDA_CONSOLE_BASE_URL/members" -Method Get -Headers $headers
+    $membersStatus = $membersResponse.StatusCode
+} catch {
+    Print-Error "HTTP request failed. $_"
+}
+
+# Check the status code
+if ($membersStatus -eq 200) {
+    $membersBody = $membersResponse.Content
+
+    # Check if the response contains "name" and "email"
+    if ($membersBody -match '"name":' -and $membersBody -match '"email":') {
+        # If the strings "name" and "email" are found, consider it successful
+        Write-Host "***** CONNECTION SUCCESSFUL *****"
     } else {
-        Print-Error "Error obtaining members information or server returned error status"
+        # If the strings are not found, print an error message
+        Print-Error "Response does not contain required attributes."
     }
+} else {
+    # If the status code is not 200 or if the response is empty, print the error message
+    Print-Error "Status code: $membersStatus Response body: $membersBody"
 }

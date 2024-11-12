@@ -14,7 +14,7 @@ Any Windows, Linux, Mac computers.
 ## How to Use
 
 1. Clone / download the project
-2. Ask for a token.txt file to a Camunda Trainer
+2. Ask for a envVars.txt file to a Camunda Trainer/Manager
 3. Copy the file in the root directory of the project
 4. Run the script:
    - **Windows**: Open PowerShell at the project root directory and run `./testConnection.ps1`
@@ -25,10 +25,10 @@ Any Windows, Linux, Mac computers.
 
 The script will test your connection to Camunda 8 SaaS and provide one of the following outcomes:
 
-- **Success**: If a valid response is received from Camunda 8 SaaS and 3 brokers (with nodeId 0, 1, and 2) are detected, the script will print `***** CONNECTION SUCCESSFUL *****` along with connection details.
+- **Success**: If a valid response is received from Camunda 8 SaaS, the script will print `***** CONNECTION SUCCESSFUL *****`.
   This confirms a successful connection.
   You'll be able to do the training exercises.
-- **Failure**: If the connection cannot be established, or fewer than 3 brokers are detected, the script will print `***** CONNECTION FAILED *****`.
+- **Failure**: If the connection cannot be established, the script will print `***** CONNECTION FAILED *****`.
   Potential causes of failure include:
 
   - Invalid access token or authorization issues.
