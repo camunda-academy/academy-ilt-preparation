@@ -14,12 +14,13 @@ Any Windows, Linux, Mac computers.
 ## How to Use
 
 1. Clone / download the project
-2. Ask for an envVars.txt (\*) file to a Camunda Trainer/Manager
-3. Copy the file in the root directory of the project
-4. Run the script:
+2. Move to the "c8-saas-verification-tool", the root directory of this project.
+3. Ask for an envVars.txt (\*) file to a Camunda Trainer/Manager
+4. Copy the file in the root directory
+5. Run the script:
    - **Windows**: Open PowerShell at the project root directory and run `./testConnection.ps1`
    - **Mac/Unix**: Open the terminal at the project root directory and run `./testConnection.sh`
-5. Review the result for success or failure.
+6. Review the result for success or failure.
 
 ## Connection Result
 

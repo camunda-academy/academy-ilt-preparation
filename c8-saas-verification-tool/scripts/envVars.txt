@@ -1,0 +1,5 @@
+export CAMUNDA_CONSOLE_CLIENT_ID='cJ9B~EmzyK8JR~R9'
+export CAMUNDA_CONSOLE_CLIENT_SECRET='gu6znWlWyj2njJ-fX1mreB4w-R5UXlC2'
+export CAMUNDA_OAUTH_URL='https://login.cloud.camunda.io/oauth/token'
+export CAMUNDA_CONSOLE_BASE_URL='https://api.cloud.camunda.io'
+export CAMUNDA_CONSOLE_OAUTH_AUDIENCE='api.cloud.camunda.io'
