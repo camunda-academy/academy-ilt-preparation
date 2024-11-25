@@ -64,8 +64,13 @@ Known issues:
 If you have a new issue, please just create it in the github repository
 
 (\*) envVars file contains the Administration client credentials in this format:
+
 export CAMUNDA_CONSOLE_CLIENT_ID='example'
+
 export CAMUNDA_CONSOLE_CLIENT_SECRET='example'
+
 export CAMUNDA_OAUTH_URL='https://login.cloud.camunda.io/oauth/token'
+
 export CAMUNDA_CONSOLE_BASE_URL='https://api.cloud.camunda.io'
+
 export CAMUNDA_CONSOLE_OAUTH_AUDIENCE='api.cloud.camunda.io'
